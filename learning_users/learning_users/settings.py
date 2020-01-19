@@ -29,7 +29,7 @@ SECRET_KEY = 's2se(ja(ksyei)o(f!#xouyblq1ah7hdfi3$rh(or9za2^8w$$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [kenobata.pythonanywhere.com]
 
 
 # Application definition
