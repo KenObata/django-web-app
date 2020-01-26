@@ -1,0 +1,189 @@
+.techfont{
+    font-family: 'Russo One',sans-serif;
+    font-size:1.5em;
+    margin-bottom:10px;
+}
+.bigbrand{
+    font-size: 1.5em;
+}
+
+.centerstage{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+
+@import 'compass/css3';
+
+$n: 4; // number of cube slices, has to match the number in the markup
+$l: 10em; // cube edge length
+$t: 8s;
+$dy: .2*$l;
+
+$sp: 100%/2/($n + 1); // time interval allocated to the animation of a slice
+$m: 3; // number of bounces that happen
+$bp: .75*$sp;
+$up: 2*$bp/$m/($m + 1);
+
+$vp: 3*$l;
+
+body {
+	overflow: hidden;
+	margin: 0;
+	height: 100vh;
+	background: #8ab7ca;
+	
+	&:before, &:after {
+		position: absolute;
+		width: 100%;
+		opacity: .05;
+		font: italic 900 4vmin/ 2 petit formal script;
+		text-align: center
+	}
+	
+	&:before { content: 'Missing you every day' }
+	
+	&:after {
+		bottom: 0;
+		content: '1st of June 1927 - 18th of January 2019'
+	}
+}
+
+@keyframes prog { to { transform: translate(0); } }
+
+div {
+	position: absolute;
+	transform-style: preserve-3d
+}
+
+.slice {
+	left: calc((var(--k) - .5*(var(--n) - 1))*#{$l}/var(--n));
+	animation: a $t calc(var(--k)/var(--n)*#{.5*$t} - #{$t}) infinite forwards;
+	
+	@for $k from 0 to $n {
+		&:nth-child(#{$k + 1}) { --k: #{$k} }
+	}
+}
+
+.cube {
+	--n: #{$n};
+	--f: 0;
+	--notf: calc(1 - var(--f));
+	--sgnf: calc(1 - 2*var(--f));
+	top: 50%; left: 50%;
+	transform: rotatex(-35deg) rotatey(calc(var(--sgnf)*45deg));
+	animation: flip $t steps(1) infinite
+}
+
+@keyframes flip { 50% { --f: 1 } }
+
+.cuboid {
+	animation-name: cuboid;
+	
+	&__face {
+		--i: 0;
+		--j: calc(1 - var(--i));
+		--m: 1;
+		--out: var(--i);
+		--p: 0;
+		--inn: calc(1 - var(--out));
+		--top: calc(var(--p)*var(--i));
+		--lat: calc(1 - var(--top));
+		--pad: calc((var(--j) + var(--i)/var(--n))*#{.5*$l});
+		margin: -.5*$l calc(-1*var(--pad));
+		padding: .5*$l var(--pad);
+		transform: 
+			rotate3d(var(--i), var(--j), 0, calc(var(--m)*90deg)) 
+			translatez(calc((var(--i) + var(--j)/var(--n))*#{.5*$l}));
+		box-shadow: 0 0 calc(var(--i)*1px) currentcolor;
+		background: currentcolor;
+		--lum: calc(65% + var(--out)*15% + var(--top)*20% + (var(--notf)*var(--i) + var(--f)*var(--j))*var(--lat)*10%);
+		color: HSL(200, calc(var(--inn)*30%), var(--lum));
+		
+		&:nth-child(2n) { --p: 1 }
+		
+		&:nth-child(-n + 4) { --i: 1 }
+		
+		@for $i from 0 to 6 {
+			@if $i%3 != 1 {
+				&:nth-child(#{$i + 1}) { --m: #{if($i < 4, $i, pow(-1, $i))} }
+			}
+		}
+	}
+
+	&:nth-child(1) &__face:nth-child(6), 
+	&:nth-child(#{$n}) &__face:nth-child(5) { --out: 1 }
+}
+
+@keyframes cuboid {
+	$min-list-0: ();
+	$min-list-1: ();
+	$max-list-0: ();
+	$max-list-1: ();
+	
+	@for $i from 0 to $m {
+		$j: $m - $i;
+		$cp: $sp - .5*$j*($j + 1)*$up;
+		$min-list-0: $min-list-0, 50% + $cp;
+		$min-list-1: $min-list-1, $cp;
+		
+		$cp: $cp + .5*$j*$up;
+		$max-list-0: $max-list-0, 50% + $cp;
+		$max-list-1: $max-list-1, $cp;
+		
+		$fx: 1 - $cp/$sp;
+		$fy: pow($fx, 2);
+		#{50% + $cp} { transform: translatey(-(1 - $fy)*$dy) }
+		#{$cp} { transform: translatey((1 - $fy)*$dy) }
+	}
+	
+	0%, #{$min-list-0}, #{50% + $sp}, 100% { transform: translatey(-$dy) }
+	#{$min-list-1}, #{$sp}, 50% { transform: translatey($dy) }
+	#{$min-list-0}, #{$min-list-1} { animation-timing-function: ease-out }
+	#{$max-list-0}, #{$max-list-1} { animation-timing-function: ease-in }
+}
+
+.drop {
+	transform: translatey(.5*$l + $dy + 2em) rotatex(90deg);
+	opacity: .1;
+	filter: blur(9px)
+}
+
+.shadow {
+	margin: -.5*$l calc(#{-.5*$l}/var(--n));
+	padding: .5*$l calc(#{.5*$l}/var(--n));
+	transform-origin: calc((var(--k) - .5*(var(--n) - 1))*#{-$l}/var(--n)) 50%;
+	transform: scale(var(--sr));
+	opacity: var(--sr);
+	background: #000;
+	animation-name: shadow
+}
+
+@keyframes shadow {
+	$min-list-0: ();
+	$min-list-1: ();
+	$max-list-0: ();
+	$max-list-1: ();
+	
+	@for $i from 0 to $m {
+		$j: $m - $i;
+		$cp: $sp - .5*$j*($j + 1)*$up;
+		$min-list-0: $min-list-0, 50% + $cp;
+		$min-list-1: $min-list-1, $cp;
+		
+		$cp: $cp + .5*$j*$up;
+		$max-list-0: $max-list-0, 50% + $cp;
+		$max-list-1: $max-list-1, $cp;
+		
+		$fx: 1 - $cp/$sp;
+		$fy: pow($fx, 2);
+		#{50% + $cp} { --sr: #{1 - (2 - $fy)*$dy/$vp} }
+		#{$cp} { --sr: #{1 - $fy*$dy/$vp} }
+	}
+	
+	0%, #{$min-list-0}, #{50% + $sp}, 100% { --sr: #{1 - 2*$dy/$vp} }
+	#{$min-list-1}, #{$sp}, 50% { --sr: 1 }
+	#{$min-list-0}, #{$min-list-1} { animation-timing-function: ease-out }
+	#{$max-list-0}, #{$max-list-1} { animation-timing-function: ease-in }
+}
