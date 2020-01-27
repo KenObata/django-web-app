@@ -4,8 +4,8 @@
 {% block content %}
   <div class="jumbotron">
 
-    <h2>Please Login: </h2>
-    <h3>(Must be SuperUser, please check admin for issues.)</h3>
+    <h2>Admin Login: </h2>
+    <h3>(This page in only for admin. Must be SuperUser, please contact admin for any issues.)</h3>
     {% if form.errors %}
         <p>Your username and password didn't match.Please try again!</p>
     {% endif %}
@@ -17,5 +17,7 @@
         <input type="submit" class='btn btn-primary' value="Login" />
         <input type="hidden" name="next" value="{{ next }}" />
     </form>
+      <br>
+      <p>contact for admin:kenichiderumo@gmail.com</p>
   </div>
 {% endblock %}

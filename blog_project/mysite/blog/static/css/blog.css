@@ -40,6 +40,7 @@
   filter:hue-rotate(0deg);
   color: linear-gradient(45deg,#0f8,#08f);
   animation:hue 5000ms infinite linear;
+  
 }
 
 @keyframes spinify {
@@ -70,4 +71,10 @@
   0%{filter: hue-rotate(0deg);}
   100%{filter:hue-rotate(360deg);}
 
+}
+
+.body {
+  background-image: url(img/UVic.jpeg);
+  height:100vh;
+  background-size:cover;
 }

@@ -1,11 +1,22 @@
 from django.db import models
 from django.utils import timezone
 from django.urls import reverse
+from django import forms
+
+# added for user registration
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Post(models.Model):
-    author = models.ForeignKey('auth.User',on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
+    #author = models.ForeignKey('auth.User',on_delete=models.CASCADE)
+    #title = models.CharField(max_length=200)
+    Course = models.CharField(max_length=200)
+    
+    #added 1/26/2020
+
+    When = models.CharField(max_length=200, blank=True, null=True)
+    Instructor = models.CharField(max_length=200, blank=True, null=True)
+    
     text = models.TextField()
     create_date=models.DateTimeField(default=timezone.now())
     published_date = models.DateTimeField(blank=True, null=True)
@@ -23,7 +34,7 @@ class Post(models.Model):
         return reverse("post_detail",kwargs={'pk':self.pk})
     
     def __str__(self):
-        return self.title
+        return self.Course
 
 
 class Comment(models.Model):
@@ -45,3 +56,20 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.text
+
+#added for user registration
+class UserProfileInfo(models.Model):
+    
+    # Create relationship (don't inherit from User!)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    
+    # Add any additional attributes you want
+    portfolio_site = models.URLField(blank=True)
+    # pip install pillow to use this!
+    # Optional: pip install pillow --global-option="build_ext" --global-option="--disable-jpeg"
+    profile_pic = models.ImageField(upload_to='basic_app/profile_pics',blank=True)
+    
+    def __str__(self):
+        # Built-in attribute of django.contrib.auth.models.User !
+        return self.user.username
+
